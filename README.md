@@ -1,2 +1,2 @@
-# computer-vision-minicourse
+# Computer Vision Minicourse
 An introduction to Computer Vision concepts and techniques.
