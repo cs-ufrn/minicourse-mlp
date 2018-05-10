@@ -102,7 +102,7 @@
 
     \subsection{Multilayer Architecture}
 
-        \begin{frame}{Multilayer Architecture}{Dense feedfoward architecture}
+        \begin{frame}{Multilayer Architecture}{Fully connected feedforward architecture}
             
             An architecture with $k$ layers, $L_0, L_1, \ldots, L_{k-1}$,
             is graphically represented as:
@@ -204,6 +204,215 @@
                     \draw [->] (B4)--(C);
                 \end{tikzpicture}
             \end{figure}
+        \end{frame}
+    
+        \begin{frame}{Multilayer Architecture}{Fully connected feedforward architecture}
+            \begin{block}{Observations}
+                \begin{itemize}
+                    \item $L_0$ is the \textbf{input layer}.
+                        \begin{itemize}
+                            \item Neurons in this layer are \textbf{input neurons}.
+                            \item An input neuron $j$ takes the $j$-th component of the input vector.
+                            \item Input neurons do not perform any computation or
+                                        activation: just output the input value.
+                            \item The output of $L_0$ is $\mathbf{x}$, the input vector.
+                        \end{itemize}
+                    \item $L_{k-1}$ is the \textbf{output layer} and its output is the
+                        network output.
+                    \item This architecture is \textbf{fully connected} because each neuron in
+                        layer $L_i$ is connected to every neuron in layer $L_{i+1}$.
+                    \item This architecture is \textbf{feedforward} because there is no back 
+                        arrows forming cycles; otherwise, it would be \emph{recurrent}.
+                \end{itemize}
+            \end{block}
+        \end{frame}
+
+        \begin{frame}{Multilayer Architecture}{Fully connected feedforward architecture}
+            How can we perform calculations and learning in this architecture? Mathematics, of course.
+
+            \begin{block}{Representing connections between layers}
+                Consider layer $L_l, l = 1, \ldots, C-1$, and neuron $k$
+                of $L_l$. Since the architecture is fully connected,
+                $k$ is connected to all neurons $j$ in $L_{l-1}$. 
+                Denote by $w^l_{kj}$ the weight of the connection
+                between neuron $j$ of $L_{l-1}$ and neuron $k$ of $L_l$:
+
+                \begin{figure}
+                    \centering
+                    \begin{tikzpicture}
+                        % Layer l-1
+                        \draw (0,4) node[circle,minimum size=0.2cm,draw] (A1) {};
+                        %\draw (0,3.5) node[circle,minimum size=0.2cm,draw] (A2) {};
+                        \node (A) at (0,3.5) {$\tiny \vdots$};
+                        \draw (0,3) node[circle,minimum size=0.2cm,draw] (A3) {};
+                        \node (A) at (0,2.5) {$\tiny \vdots$};
+                        \draw (0,2) node[circle,minimum size=0.2cm,draw] (A4) {};
+                        \node (TLM1) at (0,3) {\tiny j};
+                        \node (AL) at (0,1.5) {$L_{l-1}$};
+                        % Layer l
+                        \draw (2,4) node[circle,minimum size=0.2cm,draw] (A1) {};
+                        %\draw (2,3.5) node[circle,minimum size=0.2cm,draw] (A2) {};
+                        \draw (2,3) node[circle,minimum size=0.2cm,draw] (A3) {};
+                        \node (A) at (2,3.5) {\tiny $\vdots$};
+                        \node (TL1) at (2,3) {\tiny k};
+                        \node (A) at (2,2.5) {\tiny $\vdots$};
+                        \draw (2,2) node[circle,minimum size=0.2cm,draw] (A4) {};
+                        \node (AL) at (2,1.5) {$L_{l}$};
+                        % link
+                        \draw [->] (TLM1) -- node [above] {\tiny $w^l_{kj}$} (TL1);
+                    \end{tikzpicture}
+                \end{figure}
+
+            \end{block}
+
+        \end{frame}
+
+
+        \begin{frame}{Multilayer Architecture}{Fully connected feedforward architecture}
+            \begin{block}{Representing connections between layers}
+                In this way, we can represent all weights between two layers
+                using only one matrix $\mathbf{W}^l = (w^l_{kj})$:
+        
+                \[
+                    \mathbf{W}^l = 
+                    \begin{bmatrix}
+                        w^l_{11} & w^l_{12} & \ldots & w^l_{1|L_{l-1}|}\\
+                        w^l_{21} & w^l_{22} & \ldots & w^l_{2|L_{l-1}|}\\
+                        \vdots & \vdots & \ddots & \vdots\\
+                        w^l_{|L_l|1} & w^l_{|L_l|2} & \ldots & w^l_{|L_l||L_{l-1}|}\\
+                    \end{bmatrix}.
+                \]                
+
+                Notice that: 
+                \begin{itemize}
+                    \item $\mathbf{W}^l$ has dimensions $|L_l| \times |L_{l-1}|$.
+                    \item The weight vector of connections to neuron $k$ in $L_l$ is the $k$-th row of $\mathbf{W}^l$, denoted by $\mathbf{w^l_k}$.
+                    \item All connections in the network are represented! They are all in matrices $\mathbf{W}^1, \mathbf{W}^2, \ldots, \mathbf{W}^{C-1}$.
+                \end{itemize}
+            \end{block}
+        \end{frame}
+
+        \begin{frame}{Multilayer Architecture}{Fully connected feedforward architecture}
+            \begin{block}{Representing the biases}
+                Remember that each neuron has its own bias. So, let $b^l_k$ denote the
+                bias of neuron $k$ in layer $L_l$. Then, the biases in layer $l$ are 
+                represented as just a vector 
+
+                $$\mathbf{b}^l = \langle b^l_1, b^l_2, \ldots, b^l_{|L_{l}|} \rangle.$$
+                
+                In this way, all biases are represented by vectors $\mathbf{b}^1, \mathbf{b}^2, \ldots, \mathbf{b}^{C-1}.$
+            \end{block}
+        \end{frame}
+
+        \begin{frame}{Multilayer Architecture}{Fully connected feedforward architecture}
+            \begin{block}{Representing layer outputs}
+                Denote by $a^l_k$ the output of neuron $k$ in layer $L_l$, and by $\mathbf{a^l}$ the output vector
+                for layer $L_l$. How to compute such output? Look: \\~\\
+
+                \begin{figure}
+                    \centering
+                    \begin{tikzpicture}
+                        % Layer l-1
+                        \draw (0,4) node[circle,minimum size=0.2cm,draw] (A1) {};
+                        \draw (0,3) node[circle,minimum size=0.2cm,draw] (A2) {};
+                        \draw (0,2) node[circle,minimum size=0.2cm,draw] (A3) {};
+                        \node (A) at (0,1.5) {$\tiny \vdots$};
+                        \draw (0,0.5) node[circle,minimum size=0.2cm,draw] (A4) {};
+                        \node (BL) at (0,0) {$L_{l-1}$};
+                        % Layer l
+                        \draw (2,4) node[circle,minimum size=0.2cm,draw] (B1) {};
+                        %\draw (2,3.5) node[circle,minimum size=0.2cm,draw] (A2) {};
+                        \draw (2,3) node[circle,minimum size=0.2cm,draw] (B3) {};
+                        \node (A) at (2,3.5) {\tiny $\vdots$};
+                        \node (TL1) at (2,3) {\tiny k};
+                        \node (B) at (2,2.5) {\tiny $\vdots$};
+                        \draw (2,2) node[circle,minimum size=0.2cm,draw] (B4) {};
+                        \node (AL) at (2,1.5) {$L_{l}$};
+                        % link
+                        \draw [->] (A1) node [above] {\hspace{0.8cm} \tiny $a^{l-1}_1$} -- node [above] {\tiny $w^l_{k1}$} (B3);
+                        \draw [->] (A2)  node [above] {\hspace{0.8cm} \tiny $a^{l-1}_2$}-- node [above] {\tiny $w^l_{k2}$} (B3);
+                        \draw [->] (A3)  node [above] {\hspace{0.6cm}\tiny $a^{l-1}_3$}-- node [above] {\tiny $w^l_{k3}$} (TL1);
+                        \draw [->] (A4)  node [above] {\hspace{1.5cm} \tiny $a^{l-1}_{|L_{l-1}|}$}-- node [below] {\hspace{.6cm}\tiny $w^l_{k|L_{l-1}|}$} (B3);
+                        % outs
+                        \node (O1) at (3,3) {\tiny $a^l_k$};
+                        \draw [->](TL1) -- (O1);
+                        
+                    \end{tikzpicture}
+                \end{figure}
+            \end{block}
+        \end{frame}
+
+        \begin{frame}{Multilayer Architecture}{Fully connected feedforward architecture}
+            \begin{block}{Representing layer outputs}
+                Denote by $z^l_k$
+                the computation performed by the neuron, i.e:
+                \[
+                    z^l_k = \sum_j^{|L_{l-1}|} w^l_{kj}a^{l-1}_{j} = \mathbf{w^l_k}\mathbf{a^{l-1}}.
+                \]
+                Then, the neuron output is
+                \[
+                    a^l_k = f(z^l_k + b^l_k).
+                \]
+                And the \textbf{layer output} is
+                \[
+                    \mathbf{a}^l = \mathbf{f}(\mathbf{W}^l \cdot \mathbf{a}^{l-1} + \mathbf{b}^l).
+                \]
+            \end{block}
+        \end{frame}
+
+        \begin{frame}{Multilayer Architecture}{Fully connected feedforward architecture}
+                Didn't get it? Look: 
+
+                {\tiny
+                \begin{align*}
+                    \mathbf{f}\left( \mathbf{W}^l \cdot \mathbf{a^{l-1}} + \mathbf{b^l} \right) &=
+                    \mathbf{f} \left( \begin{bmatrix}
+                        w^l_{11} & w^l_{12} & \ldots & w^l_{1|L_{l-1}|}\\
+                        w^l_{21} & w^l_{22} & \ldots & w^l_{2|L_{l-1}|}\\
+                        \vdots & \vdots & \ddots & \vdots\\
+                        w^l_{|L_l|1} & w^l_{|L_l|2} & \ldots & w^l_{|L_l||L_{l-1}|}\\
+                    \end{bmatrix}
+                    \cdot
+                    \begin{bmatrix}
+                        a^{l-1}_1 \\ a^{l-1}_2  \\ \vdots  \\ a^{l-1}_{|L_{l-1}|}
+                    \end{bmatrix}
+                    +
+                    \begin{bmatrix}
+                        b^{l}_1 \\ b^{l}_2  \\ \vdots  \\ b^{l}_{|L_l|}
+                    \end{bmatrix}
+                    \right)\\
+                    & =
+                    \mathbf{f}\left( \begin{bmatrix}
+                        \sum_j^{|L_{l-1}|} w_{1j}a^{l-1}_j + b^l_1\\
+                        \sum_j^{|L_{l-1}|} w_{2j}a^{l-1}_j + b^l_2\\
+                        \vdots\\
+                        \sum_j^{|L_{l-1}|} w_{|L_l|j}a^{l-1}_j + b^l_{|L_l|}\\
+                    \end{bmatrix} \right)\\
+                    & = 
+                    \mathbf{f} \left( \begin{bmatrix}
+                        \mathbf{w^l_1}\mathbf{a^{l-1}} + b^l_1\\
+                        \mathbf{w^l_2}\mathbf{a^{l-1}} + b^l_2\\
+                        \vdots\\
+                        \mathbf{w^l_{|L_l|}}\mathbf{a^{l-1}} + b^l_{|L_l|}\\
+                    \end{bmatrix}\right)\\
+                    & = 
+                    \begin{bmatrix}
+                        f(z^l_1) & 
+                        f(z^l_2) &
+                        \ldots &
+                        f(z^l_{|L_l|})
+                    \end{bmatrix}^T\\
+                    & =
+                    \begin{bmatrix}
+                        a^l_1 & 
+                        a^l_2 &
+                        \ldots &
+                        a^l_{|L_l|}
+                    \end{bmatrix}^T\\
+                    & = 
+                    \mathbf{a^l}
+                \end{align*}
+                }
         \end{frame}
 
 \end{document}
