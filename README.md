@@ -10,7 +10,7 @@ Python libraries which implement this kind
 of ANN.
 
 All explanations and implementations are given in 
-Jupyter Notebooks.
+Jupyter Notebooks and a presentation.
 
 ## Experiences
 
