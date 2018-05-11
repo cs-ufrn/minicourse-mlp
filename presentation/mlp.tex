@@ -2,9 +2,10 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage{tikz}
+\usepackage[ruled, linesnumbered]{algorithm2e}
 
-\title{Multilayer Perceptron}
-\subtitle{Multilayer Dense Feedforward Neural Networks}
+\title{Introduction to Multilayer Perceptron}
+\subtitle{Multilayer Fully Connected Feedforward Neural Networks}
 \author{Vitor Greati\inst{1}}
 \institute[]
 {
@@ -38,13 +39,41 @@
 
 \section{Introduction}
 
-    \begin{frame}{Introduction}
-        TODO.
-    \end{frame}
+    \subsection{Concept}
+
+         \begin{frame}{Concept}{Defining Neural Networks}
+
+            Neural Networks or Artificial Neural Networks are computational models
+            inspired in the neural system, containing a \textbf{labelled directed graph} $G=(V,E)$ whose nodes 
+            are capable of performing some \textbf{simple computation} and where each edge $(u,v) \in E$ \textbf{carries the output}
+            of such computation from $u$ to $v$ increased or diminished by the \textbf{edge weight} $w(u,v)$.\\~\\ 
+
+The weights
+            indicate the importance degree of the signal of each connection.\\~\\
+
+In a Neural Network,
+            these \textbf{weights are modified} during the learning process by \textbf{learning algorithms}.
+
+        \end{frame}
+
+    \subsection{Applications}
+        \begin{frame}{Applications}{Neural Networks for what?}
+
+            Neural networks can be applied to supervised, unsupervised and semi-supervised learning
+            tasks, given the right architecture.\\~\\
+
+            Common applications are:
+            \begin{itemize}
+                \item classification;
+                \item regression;
+                \item clustering;
+                \item vector quantization;
+                \item pattern association;
+                \item function approximation.
+            \end{itemize}
+        \end{frame}
 
     \subsection{Neurons}
-
-
     \begin{frame}{Neurons}{Basic elements}
 
         The neuron's basic task is to take an input, perform some computation and
@@ -54,7 +83,7 @@
             \begin{itemize}
                 \item An input vector $\mathbf{x} = \langle x_1, x_2, \ldots, x_n \rangle \in \mathbb{R}^n$.
                 \item A vector of weights $\mathbf{w} = \langle w_1, w_2, \ldots, w_n \rangle \in \mathbb{R}^n$.
-                \item A constant $b \in \mathbb{R}$, called \emph{bias}.
+                \item A value $b \in \mathbb{R}$, called \emph{bias}.
                 \item A computation between inputs and weights, like 
                     $$z=\mathbf{x}\cdot\mathbf{w} =\sum_i x_iw_i.$$
                 \item An activation function $f$ to produce an output $f(z + b)$.
@@ -73,10 +102,10 @@
                 \node (D) at (0,1) {$x_3$};
                 \node (E) at (0,0) {$\vdots$};
                 \node (F) at (0,-1) {$x_n$};
-                \draw [->] (B) -- (A);
-                \draw [->] (C) -- (A);
-                \draw [->] (D) -- (A);
-                \draw [->] (F) -- (A);
+                \draw [->] (B) -- node [above] {$w_1$} (A);
+                \draw [->] (C) -- node [above] {$w_2$}(A);
+                \draw [->] (D) -- node [above] {$w_3$}(A);
+                \draw [->] (F) -- node [above] {$w_n$}(A);
                 \node (H) at (8,1) {$a=f(z+b)$};
                 \draw [->] (A) -- (H);
                 \node (G) at (4,1) {$z=\sum_i x_iw_i$};
@@ -92,7 +121,7 @@
             \begin{tikzpicture}
                 \draw (4,1) node[circle,minimum size=3cm,draw] (A) {};
                 \node (D) at (0,1) {$\mathbf x$};
-                \draw [->] (D) -- (A);
+                \draw [->] (D) -- node [above] {$\mathbf w$}(A);
                 \node (H) at (8,1) {$a=f(z+b)$};
                 \draw [->] (A) -- (H);
                 \node (G) at (4,1) {$z=\mathbf{x} \cdot \mathbf{w}$};
@@ -100,11 +129,129 @@
         \end{figure}
     \end{frame}
 
-    \subsection{Multilayer Architecture}
+    \subsection{Activation functions}
+
+        \begin{frame}{Activation functions}{Sigmoid function}
+            
+            The sigmoid is a classical function in the neuron activation context. It is defined by:
+
+            \begin{displaymath}
+                f_{sig}(net) = \frac{1}{1 + e^{-net}}
+            \end{displaymath}
+
+            When compared to the step function:
+            \begin{itemize}
+                \item $f_{sig}$ is continuous and differentiable everywhere;
+                \item $f_{sig}$ is symmetric around the y-axis;
+                \item $f_{sig}$ asymptotically approaches its saturation values.
+            \end{itemize}
+
+            However:
+            \begin{itemize}
+                \item $f_{sig}$ outputs are not zero centered;
+                \item Saturated neurons essentially kill the gradient, since the delta will be extremely small.
+            \end{itemize}
+        \end{frame}
+
+
+        \begin{frame}{Activation functions}{Step function}
+
+            The step function is defined as
+            \begin{displaymath}
+                f_s(net) = 
+                \begin{cases}
+                    1, net > 0\\
+                    0, net < 0\\
+                \end{cases}
+            \end{displaymath}
+
+            Notice that:
+            \begin{itemize}
+                \item $f_s$ only lets the signal pass if the computation results in a positive net;
+                \item $f_s$ is not differentiable, which produce problems for some learning algorithms; 
+            \end{itemize}
+
+            This activation is used in the classic \textbf{Perceptron}.
+
+        \end{frame}
+
+
+        \begin{frame}{Activation functions}{Hyperbolic tangent function}
+
+            The hyperbolic tangent function is defined as
+            \begin{displaymath}
+                f_{tanh}(net) = \tanh(net) = \frac{e^{net} - e^{-net}}{e^{net} + e^{-net}}.
+            \end{displaymath}
+
+            Notice that:
+            \begin{itemize}
+                \item $f_{tanh}$ is zero centered;
+                \item The problem for saturated neurons remains.
+            \end{itemize}
+
+        \end{frame}
+
+        \begin{frame}{Activation functions}{ReLU - Rectified Linear Unit}
+
+            The ReLU function is defined as:
+
+            \begin{displaymath}
+                f_{relu}(net) = \max(0, net).
+            \end{displaymath}
+
+            Notice:
+            \begin{itemize}
+                \item $f_{relu}$ is not saturable and it is extremely efficient;
+                \item $f_{relu}$ is not differentiable at $0$.
+            \end{itemize}
+
+        \end{frame}
+
+        \begin{frame}{Activation functions}{Leaky ReLU - Leaky Rectified Linear Unit}
+            The Leaky ReLU is defined as:
+
+            \begin{displaymath}
+                f_{lrelu}(net)=
+                \begin{cases}
+                    net, net \geq 0\\
+                    \alpha \times net, net < 0
+                \end{cases}
+            \end{displaymath}
+
+            \begin{itemize}
+                \item $f_{lrelu}$ allows a small, non-zero gradient at $0$;
+                \item $f_{lrelu}$ allows negative values;
+                \item PReLUs, Parametric ReLUs, allows $\alpha$ to be learned differently for each node.
+            \end{itemize}
+        \end{frame}
+
+        \begin{frame}{Activation functions}{ELU - Exponential Linear Units}
+            The ELU function is defined as:
+
+            \begin{displaymath}
+                f_{elu}(net) = 
+                \begin{cases}
+                    net, net \geq 0\\
+                    \alpha \times (e^{net} - 1), neq < 0
+                \end{cases}
+            \end{displaymath}
+
+            Here, $\alpha$ is a constant, set when the network is instantiated. A common
+            value for it is $\alpha = 1.0$.\\~\\
+
+            ELUs have presented better results than ReLUs.
+
+        \end{frame}
+
+
+
+\section{Multilayer Perceptron}
+
+    \subsection{Architecture}
 
         \begin{frame}{Multilayer Architecture}{Fully connected feedforward architecture}
             
-            An architecture with $k$ layers, $L_0, L_1, \ldots, L_{k-1}$,
+            An architecture with $C$ layers, $L_0, L_1, \ldots, L_{C-1}$,
             is graphically represented as:
 
             \begin{figure}
@@ -150,7 +297,7 @@
                     \draw (8,2) node[circle,minimum size=0.8cm,draw] (D3) {};
                     \node (D) at (8,1) {$\vdots$};
                     \draw (8,0) node[circle,minimum size=0.8cm,draw] (D4) {};
-                    \node (DL) at (8,-1) {$L_{k-1}$};
+                    \node (DL) at (8,-1) {$L_{C-1}$};
                     % Outs
                     \node (O1) at (9,4) {$a_1$};
                     \draw [->](D1) -- (O1);
@@ -209,6 +356,7 @@
         \begin{frame}{Multilayer Architecture}{Fully connected feedforward architecture}
             \begin{block}{Observations}
                 \begin{itemize}
+                    \item A layer $L_i$ has its own size (number of neurons) $|L_i|$.
                     \item $L_0$ is the \textbf{input layer}.
                         \begin{itemize}
                             \item Neurons in this layer are \textbf{input neurons}.
@@ -217,8 +365,9 @@
                                         activation: just output the input value.
                             \item The output of $L_0$ is $\mathbf{x}$, the input vector.
                         \end{itemize}
-                    \item $L_{k-1}$ is the \textbf{output layer} and its output is the
+                    \item $L_{C-1}$ is the \textbf{output layer} and its output is the
                         network output.
+                    \item Any other layer is a \textbf{hidden layer}.
                     \item This architecture is \textbf{fully connected} because each neuron in
                         layer $L_i$ is connected to every neuron in layer $L_{i+1}$.
                     \item This architecture is \textbf{feedforward} because there is no back 
@@ -227,6 +376,7 @@
             \end{block}
         \end{frame}
 
+    \subsection{Mathematical representation}
         \begin{frame}{Multilayer Architecture}{Fully connected feedforward architecture}
             How can we perform calculations and learning in this architecture? Mathematics, of course.
 
@@ -269,7 +419,6 @@
 
 
         \begin{frame}{Multilayer Architecture}{Fully connected feedforward architecture}
-            \begin{block}{Representing connections between layers}
                 In this way, we can represent all weights between two layers
                 using only one matrix $\mathbf{W}^l = (w^l_{kj})$:
         
@@ -289,7 +438,6 @@
                     \item The weight vector of connections to neuron $k$ in $L_l$ is the $k$-th row of $\mathbf{W}^l$, denoted by $\mathbf{w^l_k}$.
                     \item All connections in the network are represented! They are all in matrices $\mathbf{W}^1, \mathbf{W}^2, \ldots, \mathbf{W}^{C-1}$.
                 \end{itemize}
-            \end{block}
         \end{frame}
 
         \begin{frame}{Multilayer Architecture}{Fully connected feedforward architecture}
@@ -307,7 +455,7 @@
         \begin{frame}{Multilayer Architecture}{Fully connected feedforward architecture}
             \begin{block}{Representing layer outputs}
                 Denote by $a^l_k$ the output of neuron $k$ in layer $L_l$, and by $\mathbf{a^l}$ the output vector
-                for layer $L_l$. How to compute such output? Look: \\~\\
+                for layer $L_l$. How to compute such output? First, look: \\~\\
 
                 \begin{figure}
                     \centering
@@ -331,7 +479,7 @@
                         % link
                         \draw [->] (A1) node [above] {\hspace{0.8cm} \tiny $a^{l-1}_1$} -- node [above] {\tiny $w^l_{k1}$} (B3);
                         \draw [->] (A2)  node [above] {\hspace{0.8cm} \tiny $a^{l-1}_2$}-- node [above] {\tiny $w^l_{k2}$} (B3);
-                        \draw [->] (A3)  node [above] {\hspace{0.6cm}\tiny $a^{l-1}_3$}-- node [above] {\tiny $w^l_{k3}$} (TL1);
+                        \draw [->] (A3)  node [above] {\hspace{0.6cm} \tiny $a^{l-1}_3$}-- node [above] {\tiny $w^l_{k3}$} (TL1);
                         \draw [->] (A4)  node [above] {\hspace{1.5cm} \tiny $a^{l-1}_{|L_{l-1}|}$}-- node [below] {\hspace{.6cm}\tiny $w^l_{k|L_{l-1}|}$} (B3);
                         % outs
                         \node (O1) at (3,3) {\tiny $a^l_k$};
@@ -343,7 +491,6 @@
         \end{frame}
 
         \begin{frame}{Multilayer Architecture}{Fully connected feedforward architecture}
-            \begin{block}{Representing layer outputs}
                 Denote by $z^l_k$
                 the computation performed by the neuron, i.e:
                 \[
@@ -357,7 +504,6 @@
                 \[
                     \mathbf{a}^l = \mathbf{f}(\mathbf{W}^l \cdot \mathbf{a}^{l-1} + \mathbf{b}^l).
                 \]
-            \end{block}
         \end{frame}
 
         \begin{frame}{Multilayer Architecture}{Fully connected feedforward architecture}
@@ -413,6 +559,24 @@
                     \mathbf{a^l}
                 \end{align*}
                 }
+        \end{frame}
+
+    \subsection{Output computation}
+        \begin{frame}{Multilayer Architecture}{Computing the network output}
+            Given an input vector $\mathbf{x}$, how to compute the output of the network?\\~\\
+            We have an equation to compute any $\mathbf{a}^l$ and the algorithm just goes like this:
+
+            \begin{algorithm}[H]
+                \KwIn{Input vector $\mathbf{x}$}
+                \KwOut{Network output $\mathbf{a}^{C-1}$}
+                \Begin{
+                    $\mathbf{a}^0 \gets \mathbf{x}$\\
+                    \For{$l \gets 1$ \KwTo $C-1$}{
+                        $\mathbf{a}^l \gets \mathbf{W}^l \cdot \mathbf{a}^{l-1} + \mathbf{b}^l$ 
+                    }
+                    \Return{ $\mathbf{a}^{C-1}$}
+                }
+            \end{algorithm}
         \end{frame}
 
 \end{document}
