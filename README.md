@@ -14,7 +14,7 @@ Jupyter Notebooks and a presentation.
 
 ## Experiences
 
-- Minicourse on Introduction to Computer Vision (10/05/2018)
+- Minicourse on Introduction to Computer Vision (11/05/2018)
 
   To be presented by Vitor, Vinicius and Artur. The Minicourse on Introduction to Computer Vision
   aims to present
