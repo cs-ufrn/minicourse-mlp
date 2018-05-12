@@ -20,7 +20,7 @@ Jupyter Notebooks and a presentation.
   aims to present
   the field of Computer Vision focusing on neural techniques for classification. Subjects
   range from Digital Image Processing with OpenCV
-  to Convolutional Neural Networks. The third part (of five) of it is this minicourse on MLPs.
+  to Convolutional Neural Networks. The fourth part (of five) of it is this minicourse on MLPs.
   
 ## Authors
 
