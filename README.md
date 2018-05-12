@@ -16,7 +16,7 @@ Jupyter Notebooks and a presentation.
 
 - Minicourse on Introduction to Computer Vision (11/05/2018)
 
-  To be presented by Vitor, Vinicius and Artur. The Minicourse on Introduction to Computer Vision
+  Presented by Vitor, Vinicius and Artur. The Minicourse on Introduction to Computer Vision
   aims to present
   the field of Computer Vision focusing on neural techniques for classification. Subjects
   range from Digital Image Processing with OpenCV
